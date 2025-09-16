@@ -1,0 +1,87 @@
+Security Assessment Report – itsecgames.com
+1]   Content Security Policy (CSP) Header Not Set
+Severity: Medium
+Affected: http://www.itsecgames.com/robots.txt
+
+Evidence:
+
+Request: GET http://www.itsecgames.com/robots.txt
+
+Response: No Content-Security-Policy header present
+
+ZAP Reference: CWE-693, OWASP 2021 A05
+Description:
+CSP is a browser feature designed to reduce cross-site scripting (XSS) and data injection attacks by restricting resource loading to trusted sources. Without CSP, attackers can inject malicious scripts, deface the site, or perform phishing/malware delivery.
+Impact:
+Increased exposure to XSS and injection-based attacks.
+Remediation:
+Configure server to send Content-Security-Policy header LIKE EG: 
+
+Content-Security-Policy: default-src 'self'; script-src 'self';
+THEN RE-RUN THE SAME-- curl -I http://www.itsecgames.com
+
+2]  Missing Anti-clickjacking Header
+
+Severity: Medium
+Affected: http://www.itsecgames.com/
+
+Evidence:
+Request: GET http://www.itsecgames.com/
+
+Response: No X-Frame-Options or CSP frame-ancestors directive set
+Description:
+Clickjacking allows attackers to trick users into interacting with hidden UI elements (e.g., clicking a hidden "Buy" or "Approve" button). Missing protection headers increase risk of UI redress attacks.
+Impact:
+Attackers can embed the site in a malicious frame, hijacking user actions.
+Remediation:
+Set one of the following headers: 
+Content-Security-Policy: frame-ancestors 'none';
+OR 
+X-Frame-Options: DENY
+
+Retest:
+Re-run curl -I http://www.itsecgames.com
+
+3]  X-Content-Type-Options Header Missing
+
+Severity: Low
+Affected: http://www.itsecgames.com/
+
+Evidence:
+
+Request: GET http://www.itsecgames.com/
+
+Response: No X-Content-Type-Options header
+Description:
+This header prevents MIME-sniffing by browsers. Without it, some browsers may incorrectly interpret files, leading to XSS risks.
+Impact:
+Attackers may craft payloads that bypass content-type restrictions.
+Remediation:
+Add:
+X-Content-Type-Options: nosniff
+
+Retest:
+Use curl -I http://www.itsecgames.com | grep -i x-content-type-options.
+
+4]  Missing Strict-Transport-Security (HSTS)
+
+Severity: Medium
+Affected: https://itsecgames.com
+ (443)
+Evidence:
+
+Command: curl -s -D - -o /dev/null https://itsecgames.com | sed -n '1,120p'
+
+Output: No Strict-Transport-Security header
+Description:
+HSTS enforces HTTPS-only connections and prevents SSL stripping attacks. Its absence leaves users vulnerable to downgrade and man-in-the-middle attacks.
+Impact:
+Attackers on the same network may intercept or downgrade HTTPS connections.
+Remediation:
+Add header:
+Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+
+Retest:
+Run: curl -I https://itsecgames.com | grep -i strict-transport-security.
+
+
