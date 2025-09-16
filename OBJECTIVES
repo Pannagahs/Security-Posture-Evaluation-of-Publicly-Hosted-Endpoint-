@@ -1,0 +1,28 @@
+Objectives with Respect to Report
+
+Identify vulnerabilities on the domain
+The ZAP scan of http://www.itsecgames.com identified 3 main vulnerabilities:
+Content Security Policy (CSP) Header Not Set (Medium risk)
+Missing Anti-clickjacking Header (Medium risk)
+X-Content-Type-Options Header Missing (Low risk)
+
+Detect potential vulnerabilities (misconfigurations, outdated software, CVEs)
+The detected issues are security misconfigurations related to missing HTTP response headers.
+These fall under OWASP Top 10: Security Misconfiguration categories and are not CVEs but misconfiguration vulnerabilities
+
+Assess SSL/TLS configuration and certificate health
+The ZAP report scanned only the HTTP site (http://), so SSL/TLS assessment was not included in this report.
+A separate tool like SSLyze or OpenSSL would need to be run on https://itsecgames.com to cover this objective.
+
+Highlight exposed information that could aid attackers (headers, banners, error messages)
+ZAP revealed that the server did not send crucial security headers: CSP, Anti-clickjacking, and X-Content-Type-Options.
+This lack of headers increases exposure to attacks such as XSS, Clickjacking, and MIME-sniffing.
+The server banner shows Apache, which reveals the backend software version family (information disclosure).
+
+Provide a prioritized list of findings with mitigation recommendations
+Medium severity (Higher Priority):
+CSP Header Not Set → Add a Content-Security-Policy header.
+Missing Anti-clickjacking Header → Add X-Frame-Options: DENY or use CSP frame-ancestors.
+Low severity (Lower Priority):
+X-Content-Type-Options Missing → Add X-Content-Type-Options: nosniff.
+This prioritization aligns with standard vulnerability management (focus on Medium risks first).
